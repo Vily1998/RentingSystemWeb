@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"     
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">    
+<!--     
+    namespace：必须与对应的接口全类名一致  UserMapper.java  
+    id ：必须与对应接口的某个对应的方法名一致即必须要和UserMapper.java接口中的方法同名。  
+ -->    
+ <mapper namespace="com.ssm.mapper.TransactionMapper">  
+
+ 
+      <!-- 根据最大id -->
+      <select id="findMaxTransactionID"  resultType="int">
+         select IFNULL(max(transaction_id),0)AS transaction_id
+         from t_rent_transaction  
+      </select>
+      
+      
+      <!-- 根据最大id -->
+      <select id="findMaxPayID"  resultType="int">
+         select IFNULL(max(pay_id),0)AS pay_id
+         from t_pay 
+      </select>
+      
+       <!-- 修改 -->
+      <update id="Agree2Deal">
+        update t_want 
+        set state=3
+        where want_id=#{want_id}
+      </update>
+      
+      <insert id="AddTransaction" parameterType="Transaction"  >
+         insert into t_rent_transaction(transaction_id,house_id,landlord_user_id,tenant_user_id,transaction_date,start_month,terminate_month,deposit,payment_method,rent_per_month,total_rent,landord_agency_fee,tenant_agency_fee) 
+         values 
+         (#{transaction_id},#{house_id},#{landlord_user_id},#{tenant_user_id},#{transaction_date},#{start_month},#{terminate_month},#{deposit},#{payment_method},#{rent_per_month},#{total_rent},#{landord_agency_fee},#{tenant_agency_fee})
+      </insert>
+      
+      
+      <insert id="AddPay" parameterType="Pay"  >
+         insert into t_pay(pay_id,transaction_id,house_id,landlord_user_id,tenant_user_id,payment_method,pay_date,rent,is_pay) 
+         values 
+         (#{pay_id},#{transaction_id},#{house_id},#{landlord_user_id},#{tenant_user_id},#{payment_method},#{pay_date},#{rent},#{is_pay})
+      </insert>
+      
+      
+      <!-- 修改 -->
+      <update id="AddTotalFee">
+        update t_total_fee
+        set total_fee=total_fee+#{agency_fee}
+        where user_id=#{user_id}
+      </update>
+      
+      <!-- 修改 -->
+      <update id="SetLevel">
+        update t_user
+        set user_level=#{level}
+        where user_id=#{user_id}
+      </update>
+      
+      <!-- 修改 -->
+      <update id="UpdateAreaIncome">
+        update t_area_income
+        set transaction_num=transaction_num+1,total_agency_fee=total_agency_fee+#{fee}
+        where area=#{area}
+      </update>
+      
+      <!-- 修改 -->
+      <update id="UpdateMonthIncome">
+        update t_month_income
+        set transaction_num=transaction_num+1,total_agency_fee=total_agency_fee+#{fee}
+        where year=#{year} and month=#{month}
+      </update>
+      
+      <!-- 查询所有 -->
+       <select id="FindTotalFee" resultType="float" parameterType="int">    
+         select total_fee
+         from t_total_fee
+         where user_id=#{user_id}
+         
+      </select>
+      
+       <!-- 查询所有 -->
+       <select id="AllTransactionInfo" resultType="Transaction" >    
+         select *
+         from t_rent_transaction
+         
+      </select>
+      
+      <!-- 查询所有 -->
+       <select id="FindTransactionByLandlordUserId" resultType="Transaction" parameterType="int" >    
+         select *
+         from t_rent_transaction
+         where landlord_user_id=#{user_id}     
+      </select>
+      
+      <!-- 查询所有 -->
+       <select id="FindTransactionByTenantUserId" resultType="Transaction" parameterType="int" >    
+         select *
+         from t_rent_transaction
+         where tenant_user_id=#{user_id}     
+      </select>
+      
+      
+      <!-- 查询所有 -->
+       <select id="SelectTransaction" resultType="Transaction">    
+         select t_rent_transaction.house_id,t_rent_transaction.landlord_user_id,t_rent_transaction.tenant_user_id,t_rent_transaction.transaction_date,t_rent_transaction.start_month,t_rent_transaction.terminate_month,t_rent_transaction.deposit,t_rent_transaction.payment_method,t_rent_transaction.rent_per_month,t_rent_transaction.total_rent,t_rent_transaction.landord_agency_fee,t_rent_transaction.tenant_agency_fee
+         from t_house,t_rent_transaction
+         where t_house.house_id=t_rent_transaction.house_id
+         
+         
+         <if test="city_name!='-1'.toString()">
+				 and t_house.city_name=#{city_name}
+         </if>
+         
+         <if test="low_start_time!='-1'.toString()">
+				 and t_rent_transaction.start_month<![CDATA[>=]]>#{low_start_time}
+         </if>
+         
+         <if test="high_start_time!='-1'.toString()">
+				 and t_rent_transaction.start_month<![CDATA[<=]]>#{high_start_time}
+         </if>
+        
+         
+         <if test="low_terminate_time!='-1'.toString()">
+				 and t_rent_transaction.terminate_month<![CDATA[>=]]>#{low_terminate_time}
+         </if>
+         
+         <if test="high_terminate_time!='-1'.toString()">
+				 and t_rent_transaction.terminate_month<![CDATA[<=]]>#{high_terminate_time}
+         </if>
+         
+        
+         <if test="low_agency_fee!=-1">
+				 and t_rent_transaction.landord_agency_fee+t_rent_transaction.tenant_agency_fee <![CDATA[>=]]>#{low_agency_fee}
+         </if>
+        
+         <if test="high_agency_fee!=-1">
+				 and t_rent_transaction.landord_agency_fee+t_rent_transaction.tenant_agency_fee <![CDATA[<=]]>#{high_agency_fee}
+         </if>
+         
+         
+      </select> 
+      
+      
+      <!-- 查询所有 -->
+       <select id="FindPayByUserID" resultType="Pay" parameterType="int" >    
+         select *
+         from t_pay
+         where is_pay=0 and datediff(now(),pay_date)>-7 and tenant_user_id=#{user_id} 
+      </select>
+      
+      
+      <!-- 查询所有 -->
+       <select id="CheckPayNum" resultType="int" parameterType="int" >    
+         select count(*)
+         from t_pay
+         where is_pay=0 and datediff(now(),pay_date)>-7 and tenant_user_id=#{user_id} 
+      </select>
+      
+      
+      <!-- 修改 -->
+      <update id="FinshPay">
+        update t_pay
+        set is_pay=1
+        where pay_id=#{pay_id}
+      </update>
+      
+      
+      <!-- 查询所有 -->
+       <select id="AllMonthIncomeInfo" resultType="MonthIncome" >    
+         select *
+         from t_month_income
+         where year=#{year}
+         
+      </select>
+      
+      
+      <!-- 查询所有 -->
+       <select id="AllAreaIncomeInfo" resultType="AreaIncome" >    
+         select *
+         from t_area_income
+         
+      </select>
+      
+ </mapper>  

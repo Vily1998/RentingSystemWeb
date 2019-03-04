@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"     
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">      
+<!--     
+    namespace：必须与对应的接口全类名一致  HouseMapper.java  
+    id ：必须与对应接口的某个对应的方法名一致即必须要和HouseMapper.java接口中的方法同名。  
+ -->    
+ <mapper namespace="com.ssm.mapper.RentMapper">  
+ 
+ 	  <!-- 根据最大id -->
+      <select id="findMaxRentID"  resultType="int">
+         select IFNULL(max(rent_id),0)AS rent_id
+         from t_rent    
+      </select>
+      
+      <insert id="addRent" parameterType="Rent"  >
+         insert into t_rent(rent_id,user_id,city_name,community_name,house_type,house_floor,is_elevator,description,deposit,payment_method,rent_per_month,register_time,modify_time) 
+         values 
+         (#{rent_id},#{user_id},#{city_name},#{community_name},#{house_type},#{house_floor},#{is_elevator},#{description},#{deposit},#{payment_method},#{rent_per_month},#{register_time},#{modify_time})
+      </insert>
+      
+      <!-- 查询所有 -->
+       <select id="SelectRentByUserId" resultType="Rent" parameterType="int">    
+         select *
+         from t_rent
+         where user_id=#{user_id}
+         
+      </select> 
+      
+      
+      <!-- 查询所有 -->
+       <select id="SelectRent" resultType="Rent">    
+         select *
+         from t_rent
+         where 1=1
+         
+         <if test="city_name!='-1'">
+				 and (city_name=#{city_name} or t_rent.city_name=-1)
+         </if>
+         
+         <if test="community_name!='-1'">
+				 and (community_name=#{community_name} or t_rent.community_name=-1)
+         </if>
+         
+        
+         <if test="house_type!=-1">
+				 and (house_type=#{house_type}or t_rent.house_type=-1)
+         </if>
+         
+        
+         
+         <if test="house_floor!=-1">
+				 and (house_floor=#{house_floor}or t_rent.house_floor=-1)
+         </if>
+         
+         <if test="is_elevator!=-1">
+				 and (is_elevator=#{is_elevator}or t_rent.is_elevator=-1)
+         </if>
+         
+         <if test="description!='-1'">
+				 and (description LIKE CONCAT(CONCAT('%',#{description},'%'))or t_rent.description='-1')
+         </if>
+         
+         <if test="payment_method!=-1">
+				 and (payment_method=#{payment_method}or t_rent.payment_method=-1)
+         </if>
+              
+         <if test="low_rent_per_month!=-1">
+				 and (rent_per_month <![CDATA[>]]>#{low_rent_per_month}or t_rent.rent_per_month=-1)
+         </if>
+        
+         <if test="high_rent_per_month!=-1">
+				 and (rent_per_month <![CDATA[<]]>#{high_rent_per_month}or t_rent.rent_per_month=-1)
+         </if>
+         
+      </select>  
+      
+      
+      <!-- 查询所有 -->
+       <select id="SelectRentByRentId" resultType="Rent" parameterType="int">    
+         select *
+         from t_rent
+         where rent_id=#{rent_id}
+         
+      </select> 
+      
+      <!-- 修改 -->
+      <update id="UpdateRent">
+        update t_rent
+        set city_name=#{city_name},community_name=#{community_name},
+        house_type=#{house_type},house_floor=#{house_floor},is_elevator=#{is_elevator},
+        description=#{description},deposit=#{deposit},payment_method=#{payment_method},
+        rent_per_month=#{rent_per_month}
+        where rent_id=#{rent_id}
+      </update>
+      
+      <!-- 删除 -->
+      <delete id="DeleteRent" parameterType="int">
+          delete 
+          from t_rent 
+          where rent_id=#{rent_id}    
+      </delete>
+      
+      
+      <!-- 根据最大id -->
+      <select id="findMaxMessageID"  resultType="int">
+         select IFNULL(max(message_id),0)AS message_id
+         from t_message    
+      </select>
+      
+      <insert id="AddMessaage" parameterType="Message"  >
+         insert into t_message(message_id,landlord_user_id,house_id,tenant_user_id,content,state,modify_time) 
+         values 
+         (#{message_id},#{landlord_user_id},#{house_id},#{tenant_user_id},#{content},#{state},#{modify_time})
+      </insert>
+      
+      <!-- 根据最大id -->
+      <select id="CheckMessageNum"  resultType="int">
+         select count(*)
+         from t_message    
+         where tenant_user_id=#{user_id} and state=0
+      </select>
+      
+      <!-- 修改 -->
+      <update id="SetMessageState">
+        update t_message
+        set state=1
+        where tenant_user_id=#{user_id}
+      </update>
+      
+      <select id="FindMessageByUserId" resultType="Message" parameterType="int">    
+         select *
+         from t_message
+         where tenant_user_id=#{user_id}
+         order by modify_time DESC
+         
+      </select>
+      
+      
+</mapper>  

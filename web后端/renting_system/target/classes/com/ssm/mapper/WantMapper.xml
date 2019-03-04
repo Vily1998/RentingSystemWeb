@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"     
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">    
+<!--     
+    namespace：必须与对应的接口全类名一致  UserMapper.java  
+    id ：必须与对应接口的某个对应的方法名一致即必须要和UserMapper.java接口中的方法同名。  
+ -->    
+ <mapper namespace="com.ssm.mapper.WantMapper">  
+
+      <!-- 根据最大id -->
+      <select id="findMaxWantID"  resultType="int">
+         select IFNULL(max(want_id),0)AS want_id
+         from t_want   
+      </select>
+      
+      <insert id="AddWant" parameterType="Want"  >
+         insert into t_want(want_id,landlord_user_id,house_id,tenant_user_id,real_name,start_month,continual_month,description,state,modify_time) 
+         values 
+         (#{want_id},#{landlord_user_id},#{house_id},#{tenant_user_id},#{real_name},#{start_month},#{continual_month},#{description},#{state},#{modify_time})
+      </insert>
+      
+      <!-- 查询所有 -->
+       <select id="SelectWantByLandlordUserId" resultType="Want" parameterType="int">    
+         select *
+         from t_want
+         where landlord_user_id=#{user_id}
+         
+      </select>
+      
+      <!-- 查询所有 -->
+       <select id="SelectWantByTenantUserId" resultType="Want" parameterType="int">    
+         select *
+         from t_want
+         where tenant_user_id=#{user_id}
+         
+      </select>
+      
+       <!-- 查询所有 -->
+       <select id="SelectWantByWantId" resultType="Want" parameterType="int">    
+         select *
+         from t_want
+         where want_id=#{want_id}
+         
+      </select>
+      
+       <!-- 修改 -->
+      <update id="Want2Agree">
+        update t_want 
+        set state=2 
+        where want_id=#{want_id}
+      </update>
+      
+      <!-- 修改 -->
+      <update id="UpdateWant">
+        update t_want 
+        set start_month=#{start_month}, continual_month=#{continual_month},description=#{description}
+        where want_id=#{want_id}
+      </update>
+      
+      <!-- 删除 -->
+      <delete id="DeleteWant" parameterType="int">
+          delete 
+          from t_want
+          where want_id=#{want_id}    
+      </delete>
+      
+      <!-- 根据最大id -->
+      <select id="CheckWantNum"  resultType="int">
+         select count(*)
+         from t_want    
+         where landlord_user_id=#{user_id} and state=1
+      </select>
+      
+      <!-- 根据最大id -->
+      <select id="CheckAgreeNum"  resultType="int">
+         select count(*)
+         from t_want    
+         where tenant_user_id=#{user_id} and state=2
+      </select>
+      
+       <!-- 根据最大id -->
+      <select id="CheckDealNum"  resultType="int">
+         select count(*)
+         from t_want    
+         where landlord_user_id=#{user_id} and state=3
+      </select>
+      
+      <!-- 修改 -->
+      <update id="SetWantState">
+        update t_want 
+        set state=4 
+        where landlord_user_id=#{user_id} and state=3
+      </update>
+      
+      
+ </mapper>  

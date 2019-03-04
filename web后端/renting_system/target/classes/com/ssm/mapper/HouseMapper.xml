@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"     
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">      
+<!--     
+    namespace：必须与对应的接口全类名一致  HouseMapper.java  
+    id ：必须与对应接口的某个对应的方法名一致即必须要和HouseMapper.java接口中的方法同名。  
+ -->    
+ <mapper namespace="com.ssm.mapper.HouseMapper">  
+ 
+ 	  <!-- 根据最大id -->
+      <select id="findMaxHouseID"  resultType="int">
+         select IFNULL(max(house_id),0)AS house_id
+         from t_house    
+      </select>
+      
+      <insert id="addHouse" parameterType="House"  >
+         insert into t_house(house_id,user_id,city_name,community_name,house_num,house_type,house_area,house_floor,is_elevator,description,deposit,payment_method,rent_per_month,register_time,modify_time,state) 
+         values 
+         (#{house_id},#{user_id},#{city_name},#{community_name},#{house_num},#{house_type},#{house_area},#{house_floor},#{is_elevator},#{description},#{deposit},#{payment_method},#{rent_per_month},#{register_time},#{modify_time},#{state})
+      </insert>
+      
+      <!-- 查询所有 -->
+       <select id="SelectHouse" resultType="House">    
+         select *
+         from t_house
+         where 1=1
+         
+         
+         <if test="city_name!='-1'">
+				 and city_name=#{city_name}
+         </if>
+         
+         <if test="community_name!='-1'">
+				 and community_name=#{community_name}
+         </if>
+         
+         <if test="house_num!='-1'">
+				 and house_num=#{house_num}
+         </if>
+         
+         <if test="house_type!=-1">
+				 and house_type=#{house_type}
+         </if>
+         
+         <if test="min_house_area!=-1">
+				 and house_area<![CDATA[>]]>#{min_house_area}
+         </if>
+         
+         <if test="max_house_area!=-1">
+				 and house_area<![CDATA[<]]>#{max_house_area}
+         </if>
+         
+         <if test="house_floor!=-1">
+				 and house_floor=#{house_floor}
+         </if>
+         
+         <if test="is_elevator!=-1">
+				 and is_elevator=#{is_elevator}
+         </if>
+         
+         <if test="description!='-1'">
+				 and description LIKE CONCAT(CONCAT('%',#{description},'%'))
+         </if>
+         
+         <if test="payment_method!=-1">
+				 and payment_method=#{payment_method}
+         </if>
+              
+         <if test="low_rent_per_month!=-1">
+				 and rent_per_month <![CDATA[>]]>#{low_rent_per_month}
+         </if>
+        
+         <if test="high_rent_per_month!=-1">
+				 and rent_per_month <![CDATA[<]]>#{high_rent_per_month}
+         </if>
+         
+         <if test="state!=-1">
+				 and state=#{state}
+         </if>
+         
+      </select>  
+      
+      
+      <!-- 查询所有 -->
+       <select id="SelectHouse2" resultType="House">    
+         select *
+         from t_house
+         where state=0
+         
+         
+         <if test="city_name!='-1'">
+				 and city_name=#{city_name}
+         </if>
+         
+         <if test="community_name!='-1'">
+				 and community_name=#{community_name}
+         </if>
+         
+         <if test="house_num!='-1'">
+				 and house_num=#{house_num}
+         </if>
+         
+         <if test="house_type!=-1">
+				 and house_type=#{house_type}
+         </if>
+         
+         <if test="min_house_area!=-1">
+				 and house_area<![CDATA[>]]>#{min_house_area}
+         </if>
+         
+         <if test="max_house_area!=-1">
+				 and house_area<![CDATA[<]]>#{max_house_area}
+         </if>
+         
+         <if test="house_floor!=-1">
+				 and house_floor=#{house_floor}
+         </if>
+         
+         <if test="is_elevator!=-1">
+				 and is_elevator=#{is_elevator}
+         </if>
+         
+         <if test="description!='-1'">
+				 and description LIKE CONCAT(CONCAT('%',#{description},'%'))
+         </if>
+         
+         <if test="payment_method!=-1">
+				 and payment_method=#{payment_method}
+         </if>
+              
+         <if test="low_rent_per_month!=-1">
+				 and rent_per_month <![CDATA[>]]>#{low_rent_per_month}
+         </if>
+        
+         <if test="high_rent_per_month!=-1">
+				 and rent_per_month <![CDATA[<]]>#{high_rent_per_month}
+         </if>
+         
+         <if test="state!=-1">
+				 and state=#{state}
+         </if>
+         
+      </select>  
+      
+      
+      <!-- 查询所有 -->
+       <select id="SelectHouseByUserId" resultType="House" parameterType="int">    
+         select *
+         from t_house
+         where user_id=#{user_id}
+         
+      </select> 
+      
+      <!-- 查询所有 -->
+       <select id="SelectHouseByHouseId" resultType="House" parameterType="int">    
+         select *
+         from t_house
+         where house_id=#{house_id}
+         
+      </select> 
+      
+      <!-- 修改 -->
+      <update id="UpdateHouse">
+        update t_house 
+        set city_name=#{city_name},community_name=#{community_name},
+        house_num=#{house_num},house_type=#{house_type},house_area=#{house_area},
+        house_floor=#{house_floor},is_elevator=#{is_elevator},description=#{description},
+        deposit=#{deposit},payment_method=#{payment_method},
+        rent_per_month=#{rent_per_month},state=#{state}
+        where house_id=#{house_id}
+      </update>
+      
+      
+      <!-- 修改 -->
+      <update id="UpdateHouseState">
+        update t_house 
+        set state=1
+        where house_id=#{house_id}
+      </update>
+      
+      <!-- 删除 -->
+      <delete id="DeleteHouse" parameterType="int">
+          delete 
+          from t_house 
+          where house_id=#{house_id}    
+      </delete>
+      
+      <insert id="addPhoto" useGeneratedKeys="true" keyProperty="house_id">
+      
+         insert into t_photo(house_id,photo) 
+         values 
+         (#{house_id},#{newFileName})
+
+      </insert>
+      
+      <!-- 查询所有 -->
+       <select id="selectPhoto" resultType="Photo" parameterType="int">    
+         select *
+         from t_photo
+         where house_id=#{house_id}
+         
+      </select> 
+      
+      
+      <!-- 删除 -->
+      <delete id="DeletePhoto" parameterType="String">
+          delete 
+          from t_photo
+          where photo=#{photo}    
+      </delete>
+</mapper>  
