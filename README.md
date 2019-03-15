@@ -1,13 +1,13 @@
 # RentingSystemWeb
-##一、运行环境配置说明
+一、运行环境配置说明
 
-	•	开发语言：前端：HTML、JSP、CSS；后端：Java
+	•开发语言：前端：HTML、JSP、CSS；后端：Java
   
-	•	IDE: Eclipse IDE for Java EE Developers
+	•IDE: Eclipse IDE for Java EE Developers
   
-	•	OS: Windows 10
+	•OS: Windows 10
   
-	•	数据库：mysql
+	•数据库：mysql
   
 	•	开源框架：
      前端：Vue；
