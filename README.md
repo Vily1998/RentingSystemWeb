@@ -35,3 +35,5 @@
 	•关键配置文件名称及路径
 	web后端\renting_system\src\main\resources\jdbc.properties
 	修改jdbc.properties中用户名和密码为您电脑上MySQL的用户名密码。
+	
+
